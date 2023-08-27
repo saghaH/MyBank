@@ -17,18 +17,16 @@ class HomePage extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         children: <Widget>[
           SizedBox(
-            width: 200, // Adjust the width as needed
-            height: 200, // Adjust the height as needed
+            width: 200,
+            height: 200,
             child: Image.asset('assets/creditcard.png'),
           ),
           const SizedBox(height: 8),
-          //const IconAndDetail(Icons.credit_card, 'MyBank, votre banque entre vos mains'),
-          //const IconAndDetail(Icons.location_city, 'San Francisco'),
           const Center(
             child: Text(
               "MyBank Mobile, votre banque entre vos mains",
               style: TextStyle(
-                fontSize: 20, // Adjust the font size as needed
+                fontSize: 20,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -40,21 +38,18 @@ class HomePage extends StatelessWidget {
             endIndent: 8,
             color: Colors.grey,
           ),
-
           const Center(
             child: Text(
               "Commencez par vous authentifier à l'application",
               style: TextStyle(
-                fontSize: 16, // Adjust the font size as needed
+                fontSize: 16,
               ),
               textAlign: TextAlign.center,
             ),
           ),
-          const SizedBox(height: 32), // Add spacing
+          const SizedBox(height: 32),
           ElevatedButton(
             onPressed: () {
-              // Navigate to the login page when the login button is pressed
-              // You need to replace LoginPage with the actual login page widget
               Navigator.push(context,
                   MaterialPageRoute(builder: (context) => LoginPage()));
             },
@@ -65,15 +60,13 @@ class HomePage extends StatelessWidget {
             child: const Text(
               'Login',
               style: TextStyle(
-                color: Color(0xFFD3D6DB), // Button text color
+                color: Color(0xFFD3D6DB),
               ),
             ),
           ),
-          const SizedBox(height: 16), // Add spacing
+          const SizedBox(height: 16),
           ElevatedButton(
             onPressed: () {
-              // Navigate to the registration page when the register button is pressed
-              // You need to replace RegisterPage with the actual registration page widget
               Navigator.push(context,
                   MaterialPageRoute(builder: (context) => RegisterPage()));
             },
@@ -84,7 +77,7 @@ class HomePage extends StatelessWidget {
             child: const Text(
               'Register',
               style: TextStyle(
-                color: Color(0xFFD3D6DB), // Button text color
+                color: Color(0xFFD3D6DB),
               ),
             ),
           ),

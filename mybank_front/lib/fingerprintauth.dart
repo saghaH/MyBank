@@ -31,15 +31,12 @@ class FingerPrintAuth extends StatelessWidget {
     final isAvailable = await hasBiometrics();
 
     if (!isAvailable) {
-      // Handle the case where biometrics is not available
       return;
     }
 
     try {
       bool authenticated = await _auth.authenticate(
         localizedReason: 'Scan Fingerprint to Authenticate',
-        //useErrorDialogs: true,
-        //stickyAuth: true,
       );
 
       if (authenticated) {
