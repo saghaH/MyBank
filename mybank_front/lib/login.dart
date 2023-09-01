@@ -41,12 +41,12 @@ class _LoginPageState extends State<LoginPage> {
       if (response.statusCode == 200) {
         List<dynamic> usersData = json.decode(response.body);
         if (usersData.isNotEmpty) {
-          Map<String, dynamic> user = usersData.first;
-          String username = user['username'];
+          Map<String, dynamic> biometricData = usersData.first;
+          String username = biometricData['username'];
           usernameController.text = username;
-          String Password = user['password'];
-
+          String Password = biometricData['password'];
           pwdController.text = Password;
+          login(username, Password, context);
         }
       } else {
         // Handle error
@@ -290,6 +290,7 @@ class _LoginPageState extends State<LoginPage> {
     final dateOfBirth = responseData['dateOfBirth'];
     final gender = responseData['gender'];
     final status = responseData['status'];
+    final biometric = responseData['biometric'];
 
     User authenticatedUser = User(
       firstName,
@@ -303,6 +304,7 @@ class _LoginPageState extends State<LoginPage> {
       dateOfBirth ?? '',
       gender ?? '',
       status ?? '',
+      biometric,
     );
 
     return authenticatedUser;

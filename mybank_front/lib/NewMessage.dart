@@ -18,9 +18,9 @@ class _NewMessagePageState extends State<NewMessagePage> {
   final authenticatedUser = Get.arguments;
   final _formKey = GlobalKey<FormState>();
 
-  final List<String> dropdownOptions = ['Option 1', 'Option 2', 'Option 3'];
+  final List<String> dropdownOptions = ['Topic 1', 'Topic 2', 'Topic 3'];
 
-  String selectedDropdownValue = 'Option 1';
+  String selectedDropdownValue = 'Topic 1';
   String messageText = '';
 
   Future<void> _submitForm() async {

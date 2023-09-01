@@ -63,20 +63,19 @@ class _SuiviOuverturePageState extends State<SuiviOuverturePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Suivi Ouverture Compte"),
+        title: Text("Track account opening"),
       ),
       body: Center(
-        child: isLoading // Display loading indicator if isLoading is true
+        child: isLoading
             ? CircularProgressIndicator()
             : ListView.builder(
-                itemCount: filteredData.length, // Use filtered data length
+                itemCount: filteredData.length,
                 itemBuilder: (context, index) {
-                  // Access the data for the current item
                   Map<String, dynamic> currentItem = filteredData[index];
 
                   return ListTile(
-                    title: Text(
-                        "Demande ouverture compte N° ${currentItem['id']}"),
+                    title:
+                        Text("Account opening request N° ${currentItem['id']}"),
                     subtitle: Text("Statut: ${currentItem['statut']}"),
                     trailing: Icon(Icons.arrow_forward),
                     onTap: () {},

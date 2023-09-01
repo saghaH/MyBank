@@ -67,7 +67,7 @@ class _ImportationComptePageState extends State<ImportationComptePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Importer un compte'),
+        title: Text('Import my accounts'),
         centerTitle: true,
       ),
       body: Container(
@@ -90,7 +90,7 @@ class _ImportationComptePageState extends State<ImportationComptePage> {
                           controller: TextEditingController(
                               text: authenticatedUser.lastName),
                           decoration: const InputDecoration(
-                            labelText: 'Nom',
+                            labelText: 'Last Nom',
                             prefixIcon: Icon(Icons.person),
                           ),
                         ),
@@ -99,7 +99,7 @@ class _ImportationComptePageState extends State<ImportationComptePage> {
                           controller: TextEditingController(
                               text: authenticatedUser.firstName),
                           decoration: const InputDecoration(
-                            labelText: 'Prénom',
+                            labelText: 'First Name',
                             prefixIcon: Icon(Icons.person),
                           ),
                         ),
@@ -117,7 +117,7 @@ class _ImportationComptePageState extends State<ImportationComptePage> {
                           controller: TextEditingController(
                               text: authenticatedUser.email),
                           decoration: const InputDecoration(
-                            labelText: 'Adresse mail',
+                            labelText: 'Mail Address',
                             prefixIcon: Icon(Icons.mail_outline),
                           ),
                         ),
@@ -125,7 +125,7 @@ class _ImportationComptePageState extends State<ImportationComptePage> {
                           controller: TextEditingController(
                               text: authenticatedUser.mobileNumber),
                           decoration: const InputDecoration(
-                            labelText: 'Numéro de téléphone',
+                            labelText: 'Mobile Number',
                             prefixIcon: Icon(Icons.phone_iphone_outlined),
                           ),
                         ),

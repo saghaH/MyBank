@@ -119,7 +119,7 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
                 enabled: isEditing,
                 controller: lastNameController,
                 decoration: const InputDecoration(
-                  labelText: 'Nom',
+                  labelText: 'Last Name',
                   prefixIcon: Icon(Icons.person),
                 ),
               ),
@@ -128,7 +128,7 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
                 enabled: isEditing,
                 controller: firstNameController,
                 decoration: const InputDecoration(
-                  labelText: 'Prénom',
+                  labelText: 'First Name',
                   prefixIcon: Icon(Icons.person),
                 ),
               ),
@@ -148,7 +148,7 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
                 controller:
                     TextEditingController(text: authenticatedUser.email),
                 decoration: const InputDecoration(
-                  labelText: 'Adresse mail',
+                  labelText: 'Mail Address',
                   prefixIcon: Icon(Icons.mail_outline),
                 ),
               ),
@@ -157,7 +157,7 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
                 enabled: isEditing,
                 controller: mobileNumberController,
                 decoration: const InputDecoration(
-                  labelText: 'Numéro de téléphone',
+                  labelText: 'Mobile Number',
                   prefixIcon: Icon(Icons.phone_iphone_outlined),
                 ),
               ),
@@ -202,19 +202,21 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
                 ElevatedButton(
                   onPressed: () async {
                     AuthenticatedUser updatedUser = AuthenticatedUser(
-                        accessToken: authenticatedUser.accessToken,
-                        type: authenticatedUser.type,
-                        id: authenticatedUser.id,
-                        username: authenticatedUser.username,
-                        email: authenticatedUser.email,
-                        roles: authenticatedUser.roles,
-                        firstName: firstNameController.text,
-                        lastName: lastNameController.text,
-                        mobileNumber: mobileNumberController.text,
-                        address: '',
-                        job: '',
-                        dateOfBirth: '',
-                        cinNumber: authenticatedUser.cinNumber);
+                      accessToken: authenticatedUser.accessToken,
+                      type: authenticatedUser.type,
+                      id: authenticatedUser.id,
+                      username: authenticatedUser.username,
+                      email: authenticatedUser.email,
+                      roles: authenticatedUser.roles,
+                      firstName: firstNameController.text,
+                      lastName: lastNameController.text,
+                      mobileNumber: mobileNumberController.text,
+                      address: '',
+                      job: '',
+                      dateOfBirth: '',
+                      cinNumber: authenticatedUser.cinNumber,
+                      biometric: authenticatedUser.biometric,
+                    );
 
                     try {
                       await updateUserInformation();

@@ -1,6 +1,11 @@
+import 'package:MyBankMobile/ExchangeRate.dart';
+import 'package:MyBankMobile/Maps.dart';
+import 'package:MyBankMobile/aboutmybank.dart';
 import 'package:MyBankMobile/app_state.dart';
 import 'package:MyBankMobile/dashboard.dart';
+import 'package:MyBankMobile/faq.dart';
 import 'package:MyBankMobile/home_page.dart';
+import 'package:MyBankMobile/howitworks.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
@@ -28,35 +33,55 @@ class MenuPage extends StatelessWidget {
       title: 'Banking Network',
       icon: Icons.location_on,
       onTap: () {
-        print('Reseau bancaire tapped');
+        try {
+          Get.to(MapsPage());
+        } catch (e) {
+          print('Navigation error: $e');
+        }
       },
     ),
     MenuItem(
       title: 'Exchange Rate',
       icon: Icons.monetization_on,
       onTap: () {
-        print('Cours de change tapped');
+        try {
+          Get.to(ExchangeRatePage());
+        } catch (e) {
+          print('Navigation error: $e');
+        }
       },
     ),
     MenuItem(
       title: 'About MyBank',
       icon: Icons.info,
       onTap: () {
-        print('À propos de MyBank tapped');
+        try {
+          Get.to(AboutMyBankPage());
+        } catch (e) {
+          print('Navigation error: $e');
+        }
       },
     ),
     MenuItem(
       title: 'How it works',
       icon: Icons.how_to_vote,
       onTap: () {
-        print('Comment ça marche tapped');
+        try {
+          Get.to(HIWPage());
+        } catch (e) {
+          print('Navigation error: $e');
+        }
       },
     ),
     MenuItem(
       title: 'FAQ',
       icon: Icons.question_answer,
       onTap: () {
-        print('FAQ tapped');
+        try {
+          Get.to(FAQPage());
+        } catch (e) {
+          print('Navigation error: $e');
+        }
       },
     ),
   ];

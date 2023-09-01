@@ -19,10 +19,19 @@ public class UserDTO {
     private String countryOfResidence;
     private String jobField;
     private String job;
-
+    private boolean biometric;
 
     public UserDTO() {
     }
+
+    public boolean isBiometric() {
+        return biometric;
+    }
+
+    public void setBiometric(boolean biometric) {
+        this.biometric = biometric;
+    }
+
 
     public String getCinNumber() {
         return cinNumber;

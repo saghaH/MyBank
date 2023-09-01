@@ -385,11 +385,12 @@ class RegisterPageState extends State<RegisterPage> {
       String gender = genderController.text;
       String status = maritalStatusController.text;
       String uname = usernameController.text;
+      bool biometric = false;
 
       String formattedDate = _dob.toIso8601String();
 
       user = User(firstName, lastName, email, password, mobile, cinnum, address,
-          job, formattedDate, gender, status);
+          job, formattedDate, gender, status, biometric);
       await registerUsers(user, email, password, firstName, lastName, mobile,
           cinnum, address, job, formattedDate, gender, status, uname, context);
       firstController.text = '';

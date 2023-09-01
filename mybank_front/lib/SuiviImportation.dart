@@ -64,7 +64,7 @@ class _SuiviImportationPageState extends State<SuiviImportationPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Suivi Importation Compte"),
+        title: Text("Track account import"),
       ),
       body: Center(
         child: isLoading
@@ -75,8 +75,8 @@ class _SuiviImportationPageState extends State<SuiviImportationPage> {
                   Map<String, dynamic> currentItem = filteredData[index];
 
                   return ListTile(
-                    title: Text(
-                        "Demande Importation Compte N° ${currentItem['id']}"),
+                    title:
+                        Text("Account import request N° ${currentItem['id']}"),
                     subtitle: Text("Statut: ${currentItem['statut']}"),
                     trailing: Icon(Icons.arrow_forward),
                     onTap: () {},

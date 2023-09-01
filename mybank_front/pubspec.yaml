@@ -94,6 +94,11 @@ flutter:
     - D:/myBank_MobileApp/mybank_front/assets/Profile data-amico.png
     - D:/myBank_MobileApp/mybank_front/assets/Fingerprint-bro.png
     - D:/myBank_MobileApp/mybank_front/assets/Forgot password-pana.png
+    - D:/myBank_MobileApp/mybank_front/assets/Location review-bro.png
+    - D:/myBank_MobileApp/mybank_front/assets/Instruction manual-cuate.png
+    - D:/myBank_MobileApp/mybank_front/assets/FAQs-rafiki.png
+    - D:/myBank_MobileApp/mybank_front/assets/Bitcoin P2P-cuate.png
+    - D:/myBank_MobileApp/mybank_front/assets/About us page-cuate.png
     
 
   # To add assets to your application, add an assets section, like this:

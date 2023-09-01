@@ -1,10 +1,12 @@
 package com.mybank.controllers;
-import java.time.LocalDateTime;
+import java.nio.charset.StandardCharsets;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import com.mybank.models.*;
-import com.mybank.payload.request.BiometricLoginRequest;
+import com.mybank.repository.BiometricRepository;
 import com.mybank.repository.RoleRepository;
 import com.mybank.repository.UserRepository;
 import com.mybank.security.jwt.JwtUtils;
@@ -12,16 +14,13 @@ import com.mybank.security.services.EmailService;
 import com.mybank.security.services.UserDetailsImpl;
 import jakarta.validation.Valid;
 
+import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
@@ -36,11 +35,15 @@ import com.mybank.payload.response.MessageResponse;
 import com.mybank.repository.PasswordResetTokenRepository;
 
 
+import javax.crypto.*;
+import javax.crypto.spec.SecretKeySpec;
+
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
+  String secretKey = "00112233445566778899AABBCCDDEEFF";
   @Autowired
   AuthenticationManager authenticationManager;
 
@@ -56,24 +59,23 @@ public class AuthController {
   @Autowired
   JwtUtils jwtUtils;
   @Autowired
+  private BiometricRepository biometricRepository;
+  @Autowired
   private PasswordResetTokenRepository passwordResetTokenRepository;
   @Autowired
   EmailService emailService;
+
   @PostMapping("/signin")
   public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
     Authentication authentication = authenticationManager
-        .authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
+            .authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
     SecurityContextHolder.getContext().setAuthentication(authentication);
     String jwt = jwtUtils.generateJwtToken(authentication);
     UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-   /* Authentication authentication = new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), null);
-    SecurityContextHolder.getContext().setAuthentication(authentication);
 
-    String jwt = jwtUtils.generateJwtToken(authentication);
-    UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();*/
     List<String> roles = userDetails.getAuthorities().stream().map(item -> item.getAuthority())
-        .collect(Collectors.toList());
+            .collect(Collectors.toList());
     User user = userRepository.findById(userDetails.getId()).orElse(null);
     UserDTO userDTO = new UserDTO();
     userDTO.setId(userDetails.getId());
@@ -96,17 +98,6 @@ public class AuthController {
   }
 
 
-
-
-
-
-
-
-
-
-
-
-
   @PostMapping("/signup")
   public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
     if (userRepository.existsByUsername(signUpRequest.getUsername())) {
@@ -117,12 +108,12 @@ public class AuthController {
       return ResponseEntity.badRequest().body(new MessageResponse("Error: Email is already in use!"));
     }
 
-    // Create new user's account
+
     User user = new User(signUpRequest.getUsername(),
             signUpRequest.getEmail(),
             encoder.encode(signUpRequest.getPassword()));
 
-    // Set additional fields
+
     user.setFirstName(signUpRequest.getFirstName());
     user.setLastName(signUpRequest.getLastName());
     user.setMobileNumber(signUpRequest.getMobileNumber());
@@ -130,7 +121,7 @@ public class AuthController {
     //user.setNationality(signUpRequest.getNationality());
     user.setAddress(signUpRequest.getAddress());
     //user.setCountryOfResidence(signUpRequest.getCountryOfResidence());
-   // user.setJobField(signUpRequest.getJobField());
+    // user.setJobField(signUpRequest.getJobField());
     user.setJob(signUpRequest.getJob());
     user.setCinNumber(signUpRequest.getCinNumber());
 
@@ -141,16 +132,17 @@ public class AuthController {
     roles.add(userRole);
 
     user.setRoles(roles);
-    //user.setBiometric(false);
+    user.setBiometric(false);
     userRepository.save(user);
 
     return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
   }
+
   @PostMapping("/forgotpassword")
   public ResponseEntity<String> forgotPasswordSubmit(
           @Validated @RequestBody ForgotPasswordRequest forgotPasswordRequest,
           BindingResult bindingResult) {
-    // Check for validation errors
+
     if (bindingResult.hasErrors()) {
       StringBuilder errorMessages = new StringBuilder();
       for (ObjectError error : bindingResult.getAllErrors()) {
@@ -161,7 +153,7 @@ public class AuthController {
 
     String email = forgotPasswordRequest.getEmail();
 
-    // Use the findByEmail method to get the user
+
     Optional<User> optionalUser = userRepository.findByEmail(email);
 
     if (!optionalUser.isPresent()) {
@@ -170,7 +162,7 @@ public class AuthController {
 
     User user = optionalUser.get();
 
-    // Generate a reset token and save it in the database
+
     PasswordResetToken token = new PasswordResetToken();
     token.setToken(UUID.randomUUID().toString());
     token.setUser(user);
@@ -178,7 +170,7 @@ public class AuthController {
     passwordResetTokenRepository.save(token);
 
     // Create a reset link
-    String resetUrl = "http://192.168.1.20:8080/resetpassword?token=" + token.getToken();
+    String resetUrl = "http://192.168.1.18:8080/resetpassword?token=" + token.getToken();
 
     // Send an email with the reset link
     Mail mail = new Mail();
@@ -191,74 +183,45 @@ public class AuthController {
 
     return ResponseEntity.ok("Password reset request submitted successfully.");
   }
+
   @GetMapping("/biometric-true")
-  public ResponseEntity<List<User>> getUsersWithBiometricEnabled() {
-    List<User> usersWithBiometricEnabled = userRepository.findByBiometricIsTrue();
+  public ResponseEntity<List<Biometric>> getBiometricCredentials() throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
 
-  return ResponseEntity.ok(usersWithBiometricEnabled);
-  }
+    List<Biometric> allBiometrics=biometricRepository.findAll();
+    Biometric biometrics = allBiometrics.get(0);
+    if (biometrics!=null) {
 
-  @PostMapping("/biometric-login")
-  public ResponseEntity<?> biometricLogin(@RequestBody BiometricLoginRequest request) {
-    Authentication authentication = authenticateUserByUsername(request);
+      Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+      SecretKeySpec key = new SecretKeySpec(secretKey.getBytes(StandardCharsets.UTF_8), "AES");
+      cipher.init(Cipher.DECRYPT_MODE, key);
+      byte[] decodedInput = Base64.decodeBase64(biometrics.getPassword());
+      byte[] decryptedBytes = cipher.doFinal(decodedInput);
 
-    SecurityContextHolder.getContext().setAuthentication(authentication);
 
-    // Generate a JWT token
-    String jwtToken = jwtUtils.generateJwtToken(authentication);
+      String decryptedPassword = new String(decryptedBytes, StandardCharsets.UTF_8);
 
-    // Retrieve user details based on the username
-    UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-    List<String> roles = userDetails.getAuthorities().stream().map(item -> item.getAuthority())
-            .collect(Collectors.toList());
+      biometrics.setPassword(decryptedPassword);
 
-    User user = userRepository.findById(userDetails.getId()).orElse(null);
 
-    // Create a UserDTO object with the user information
-    UserDTO userDTO = new UserDTO();
-    userDTO.setId(userDetails.getId());
-    userDTO.setUsername(userDetails.getUsername());
-    userDTO.setEmail(userDetails.getEmail());
-    userDTO.setRoles(roles);
-    userDTO.setFirstName(user.getFirstName());
-    userDTO.setLastName(user.getLastName());
-    userDTO.setMobileNumber(user.getMobileNumber());
-    userDTO.setDateOfBirth(user.getDateOfBirth());
-    userDTO.setNationality(user.getNationality());
-    userDTO.setAddress(user.getAddress());
-    userDTO.setCountryOfResidence(user.getCountryOfResidence());
-    userDTO.setJobField(user.getJobField());
-    userDTO.setJob(user.getJob());
-    userDTO.setCinNumber(user.getCinNumber());
 
-    return ResponseEntity
-            .ok(new JwtResponse(jwtToken, userDTO));
+      biometrics.setPassword(decryptedPassword);
 
-  }
 
-  private Authentication authenticateUserByUsername(BiometricLoginRequest request) {
-    String username = request.getUsername();
 
-    // Load user details based on the username
-    UserDetails userDetails = loadUserByUsername(username);
 
-    // Create an authentication object
-    return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-  }
 
-  private UserDetails loadUserByUsername(String username) {
-    // Implement the logic to load user details by username from your database
-    // This might involve querying the UserRepository or another service
 
-    // For example:
-    User user = userRepository.findByUsername(username);
-    if (user == null) {
-      throw new UsernameNotFoundException("User not found with username: " + username);
+
+
+
+
+
+
+
+      return ResponseEntity.ok(allBiometrics);
+    } else {
+      return ResponseEntity.notFound().build();
     }
 
-    return new UserDetailsImpl(user);
   }
-
-
-
 }

@@ -30,24 +30,7 @@ public class ProfileController {
 
     private UserService userService;
 
-    @PostMapping("/activate-biometric")
-    public ResponseEntity<String> activateBiometric(@RequestParam Long userId) {
-        try {
-            Optional<User> optionalUser = userRepository.findById(userId);
-            if (!optionalUser.isPresent()) {
-                return ResponseEntity.badRequest().body("User not found");
-            }
 
-            User user = optionalUser.get();
-            // Set the biometric field to true
-            user.setBiometric(true);
-            userRepository.save(user);
-
-            return ResponseEntity.ok("Biometric authentication activated for user " + user.getUsername());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error activating biometric authentication");
-        }
-    }
 
 
     @PostMapping("/modifypwd")

@@ -17,6 +17,7 @@ class AuthenticatedUser {
   //final String countryOfResidence;
   //final String jobField;
   final String job;
+  final bool biometric;
 
   AuthenticatedUser({
     required this.accessToken,
@@ -35,6 +36,7 @@ class AuthenticatedUser {
     //required this.countryOfResidence,
     //required this.jobField,
     required this.job,
+    required this.biometric,
   });
 
   factory AuthenticatedUser.fromJson(Map<String, dynamic> json) {
@@ -55,6 +57,7 @@ class AuthenticatedUser {
       //countryOfResidence: json['user']['countryOfResidence'],
       //jobField: json['user']['jobField'],
       job: json['user']['job'],
+      biometric: json['user']['biometric'],
     );
   }
 
@@ -73,6 +76,7 @@ class AuthenticatedUser {
       'cinNumber': cinNumber,
       'address': address,
       'job': job,
+      'biometric': biometric,
     };
   }
 }

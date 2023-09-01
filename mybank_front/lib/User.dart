@@ -10,6 +10,7 @@ class User {
   String gender;
   String status;
   String dateofBirth;
+  bool biometric;
 
   User(
       this.firstName,
@@ -22,5 +23,6 @@ class User {
       this.job,
       this.dateofBirth,
       this.gender,
-      this.status);
+      this.status,
+      this.biometric);
 }

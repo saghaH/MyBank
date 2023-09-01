@@ -39,7 +39,7 @@ class _AccountsMenuPageState extends State<AccountsMenuPage> {
               child: Image.asset('assets/Dropdown menu-amico.png'),
             ),
             MenuOption(
-              title: 'Consulter mes comptes',
+              title: 'View my accounts',
               icon: Icons.account_balance,
               onTap: () {
                 try {
@@ -50,7 +50,7 @@ class _AccountsMenuPageState extends State<AccountsMenuPage> {
               },
             ),
             MenuOption(
-              title: 'Ouvrir un compte',
+              title: 'open an account',
               icon: Icons.add_box_outlined,
               onTap: () {
                 try {
@@ -61,7 +61,7 @@ class _AccountsMenuPageState extends State<AccountsMenuPage> {
               },
             ),
             MenuOption(
-              title: "Suivre l'ouverture d'un compte",
+              title: "Track account opening",
               icon: Icons.check,
               onTap: () {
                 try {
@@ -72,7 +72,7 @@ class _AccountsMenuPageState extends State<AccountsMenuPage> {
               },
             ),
             MenuOption(
-              title: 'Importer mes comptes',
+              title: 'Import my accounts',
               icon: Icons.upload_file_outlined,
               onTap: () {
                 try {
@@ -83,7 +83,7 @@ class _AccountsMenuPageState extends State<AccountsMenuPage> {
               },
             ),
             MenuOption(
-              title: "Suivre l'importation d'un compte",
+              title: "Track account import",
               icon: Icons.check,
               onTap: () {
                 try {
