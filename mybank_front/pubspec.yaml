@@ -49,6 +49,13 @@ dependencies:
   country_pickers: ^2.0.0
   get: ^4.6.5
   image_picker: ^1.0.2
+  flutter_image_compress: ^2.0.4
+  face_camera: ^0.0.8
+  #face_camera: ^0.0.8
+  #dio: ^5.3.2
+  #google_maps_flutter: ^2.4.1
+  #flutter_image_compress: ^2.0.4
+  #face_camera: ^0.0.8
 
 dev_dependencies:
   flutter_test:
@@ -73,7 +80,20 @@ flutter:
   uses-material-design: true
   assets:
     - assets/codelab.png
-    - D:/mybank/mybank_mobile/mybank_front/assets/creditcard.png
+    - D:/myBank_MobileApp/mybank_front/assets/creditcard.png
+    - D:/myBank_MobileApp/mybank_front/assets/mybank-logo.png
+    - D:/myBank_MobileApp/mybank_front/assets/Login-amico.png
+    - D:/myBank_MobileApp/mybank_front/assets/Dropdown menu-amico.png
+    - D:/myBank_MobileApp/mybank_front/assets/Online page-bro.png
+    - D:/myBank_MobileApp/mybank_front/assets/Messaging-amico.png
+    - D:/myBank_MobileApp/mybank_front/assets/About us page-amico.png
+    - D:/myBank_MobileApp/mybank_front/assets/Mail-pana.png
+    - D:/myBank_MobileApp/mybank_front/assets/Inbox cleanup-amico.png
+    - D:/myBank_MobileApp/mybank_front/assets/Profile data-pana.png
+    - D:/myBank_MobileApp/mybank_front/assets/My password-bro.png
+    - D:/myBank_MobileApp/mybank_front/assets/Profile data-amico.png
+    - D:/myBank_MobileApp/mybank_front/assets/Fingerprint-bro.png
+    - D:/myBank_MobileApp/mybank_front/assets/Forgot password-pana.png
     
 
   # To add assets to your application, add an assets section, like this:

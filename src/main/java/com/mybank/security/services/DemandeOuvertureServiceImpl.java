@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class DemandeOuvertureServiceImpl implements DemandeOuvertureService {
@@ -20,5 +21,12 @@ public class DemandeOuvertureServiceImpl implements DemandeOuvertureService {
         return demandeOuvertureRepository.save(demandeOuverture);
     }
 
+    @Override
+    public List<DemandeOuverture> getAllDemandeOuverture() {
+        return demandeOuvertureRepository.findAll();
+    }
+
 
 }
+
+

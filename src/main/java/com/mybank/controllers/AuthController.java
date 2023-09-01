@@ -1,10 +1,10 @@
 package com.mybank.controllers;
-
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import com.mybank.models.*;
+import com.mybank.payload.request.BiometricLoginRequest;
 import com.mybank.repository.RoleRepository;
 import com.mybank.repository.UserRepository;
 import com.mybank.security.jwt.JwtUtils;
@@ -13,11 +13,15 @@ import com.mybank.security.services.UserDetailsImpl;
 import jakarta.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
@@ -30,6 +34,8 @@ import com.mybank.payload.request.ForgotPasswordRequest;
 import com.mybank.payload.response.JwtResponse;
 import com.mybank.payload.response.MessageResponse;
 import com.mybank.repository.PasswordResetTokenRepository;
+
+
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -58,16 +64,17 @@ public class AuthController {
 
     Authentication authentication = authenticationManager
         .authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
-
     SecurityContextHolder.getContext().setAuthentication(authentication);
     String jwt = jwtUtils.generateJwtToken(authentication);
-
     UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+   /* Authentication authentication = new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), null);
+    SecurityContextHolder.getContext().setAuthentication(authentication);
+
+    String jwt = jwtUtils.generateJwtToken(authentication);
+    UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();*/
     List<String> roles = userDetails.getAuthorities().stream().map(item -> item.getAuthority())
         .collect(Collectors.toList());
-
-    User user = userRepository.findById(userDetails.getId()).orElse(null); // Récupérez l'utilisateur complet depuis la base de données
-
+    User user = userRepository.findById(userDetails.getId()).orElse(null);
     UserDTO userDTO = new UserDTO();
     userDTO.setId(userDetails.getId());
     userDTO.setUsername(userDetails.getUsername());
@@ -87,6 +94,17 @@ public class AuthController {
     return ResponseEntity
             .ok(new JwtResponse(jwt, userDTO));
   }
+
+
+
+
+
+
+
+
+
+
+
 
 
   @PostMapping("/signup")
@@ -123,6 +141,7 @@ public class AuthController {
     roles.add(userRole);
 
     user.setRoles(roles);
+    //user.setBiometric(false);
     userRepository.save(user);
 
     return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
@@ -172,6 +191,74 @@ public class AuthController {
 
     return ResponseEntity.ok("Password reset request submitted successfully.");
   }
+  @GetMapping("/biometric-true")
+  public ResponseEntity<List<User>> getUsersWithBiometricEnabled() {
+    List<User> usersWithBiometricEnabled = userRepository.findByBiometricIsTrue();
+
+  return ResponseEntity.ok(usersWithBiometricEnabled);
+  }
+
+  @PostMapping("/biometric-login")
+  public ResponseEntity<?> biometricLogin(@RequestBody BiometricLoginRequest request) {
+    Authentication authentication = authenticateUserByUsername(request);
+
+    SecurityContextHolder.getContext().setAuthentication(authentication);
+
+    // Generate a JWT token
+    String jwtToken = jwtUtils.generateJwtToken(authentication);
+
+    // Retrieve user details based on the username
+    UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+    List<String> roles = userDetails.getAuthorities().stream().map(item -> item.getAuthority())
+            .collect(Collectors.toList());
+
+    User user = userRepository.findById(userDetails.getId()).orElse(null);
+
+    // Create a UserDTO object with the user information
+    UserDTO userDTO = new UserDTO();
+    userDTO.setId(userDetails.getId());
+    userDTO.setUsername(userDetails.getUsername());
+    userDTO.setEmail(userDetails.getEmail());
+    userDTO.setRoles(roles);
+    userDTO.setFirstName(user.getFirstName());
+    userDTO.setLastName(user.getLastName());
+    userDTO.setMobileNumber(user.getMobileNumber());
+    userDTO.setDateOfBirth(user.getDateOfBirth());
+    userDTO.setNationality(user.getNationality());
+    userDTO.setAddress(user.getAddress());
+    userDTO.setCountryOfResidence(user.getCountryOfResidence());
+    userDTO.setJobField(user.getJobField());
+    userDTO.setJob(user.getJob());
+    userDTO.setCinNumber(user.getCinNumber());
+
+    return ResponseEntity
+            .ok(new JwtResponse(jwtToken, userDTO));
+
+  }
+
+  private Authentication authenticateUserByUsername(BiometricLoginRequest request) {
+    String username = request.getUsername();
+
+    // Load user details based on the username
+    UserDetails userDetails = loadUserByUsername(username);
+
+    // Create an authentication object
+    return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+  }
+
+  private UserDetails loadUserByUsername(String username) {
+    // Implement the logic to load user details by username from your database
+    // This might involve querying the UserRepository or another service
+
+    // For example:
+    User user = userRepository.findByUsername(username);
+    if (user == null) {
+      throw new UsernameNotFoundException("User not found with username: " + username);
+    }
+
+    return new UserDetailsImpl(user);
+  }
+
 
 
 }

@@ -2,8 +2,6 @@ package com.mybank.models;
 
 
 
-import com.mybank.models.Compte;
-import com.mybank.models.User;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -37,14 +35,22 @@ public class DemandeOuverture {
     @Lob
     private byte[] justifAdr;
 
-    @Lob
-    private byte[] selfie;
-    @Enumerated(EnumType.STRING)
+   @Lob
+   private byte[] selfie;
+
     @Column(name = "type_compte")
-    private Compte typeCompte;
+    private String typeCompte;
 
 
     public DemandeOuverture() {
+    }
+
+    public byte[] getSelfie() {
+        return selfie;
+    }
+
+    public void setSelfie(byte[] selfie) {
+        this.selfie = selfie;
     }
 
     public Long getId() {
@@ -112,19 +118,14 @@ public class DemandeOuverture {
         this.justifAdr = justifAdr;
     }
 
-    public byte[] getSelfie() {
-        return selfie;
-    }
 
-    public void setSelfie(byte[] selfie) {
-        this.selfie = selfie;
-    }
-
-    public Compte getTypeCompte() {
+    public String getTypeCompte() {
         return typeCompte;
     }
 
-    public void setTypeCompte(Compte typeCompte) {
+    public void setTypeCompte(String typeCompte) {
         this.typeCompte = typeCompte;
     }
+
+
 }

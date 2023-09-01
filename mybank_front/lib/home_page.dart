@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'register.dart';
 import 'src/widgets.dart';
+import 'package:provider/provider.dart';
+import 'dashboard.dart';
+import 'app_state.dart';
 
 import 'login.dart';
 
@@ -9,9 +14,14 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final appState = Provider.of<ApplicationState>(context);
+
+    if (appState.loggedIn) {
+      return DashboardPage();
+    }
     return Scaffold(
       appBar: AppBar(
-        title: const Text('MyBank'),
+        title: const Text('MyBank Mobile'),
       ),
       body: ListView(
         padding: const EdgeInsets.all(16.0),
@@ -19,12 +29,12 @@ class HomePage extends StatelessWidget {
           SizedBox(
             width: 200,
             height: 200,
-            child: Image.asset('assets/creditcard.png'),
+            child: Image.asset('assets/mybank-logo.png'),
           ),
           const SizedBox(height: 8),
           const Center(
             child: Text(
-              "MyBank Mobile, votre banque entre vos mains",
+              "Your bank in your hands",
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -40,7 +50,7 @@ class HomePage extends StatelessWidget {
           ),
           const Center(
             child: Text(
-              "Commencez par vous authentifier à l'application",
+              "Start by logging on to the application",
               style: TextStyle(
                 fontSize: 16,
               ),

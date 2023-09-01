@@ -6,7 +6,7 @@ public class LoginRequest {
   @NotBlank
   private String username;
 
-  @NotBlank
+  //@NotBlank
   private String password;
 
   public String getUsername() {

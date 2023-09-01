@@ -15,11 +15,46 @@ import 'package:http/http.dart' as http;
 import 'User.dart';
 import 'package:flutter/services.dart';
 import 'package:local_auth/local_auth.dart';
-import 'fingerprintauth.dart';
+
 import 'dashboard.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
+  @override
+  _LoginPageState createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
   static final _auth = LocalAuthentication();
+  TextEditingController usernameController = TextEditingController();
+  TextEditingController pwdController = TextEditingController();
+  @override
+  void initState() {
+    super.initState();
+    // populateUsername();
+  }
+
+  Future<void> populateUsername() async {
+    try {
+      final url = Uri.parse("http://192.168.1.18:8080/api/auth/biometric-true");
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        List<dynamic> usersData = json.decode(response.body);
+        if (usersData.isNotEmpty) {
+          Map<String, dynamic> user = usersData.first;
+          String username = user['username'];
+          usernameController.text = username;
+          String Password = user['password'];
+
+          pwdController.text = Password;
+        }
+      } else {
+        // Handle error
+      }
+    } catch (e) {
+      // Handle exception
+    }
+  }
 
   static Future<bool> hasBiometrics() async {
     try {
@@ -48,12 +83,8 @@ class LoginPage extends StatelessWidget {
       bool authenticated = await _auth.authenticate(
         localizedReason: 'Scan Fingerprint to Authenticate',
       );
-
-      if (authenticated) {
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => DashboardPage()));
-        Provider.of<ApplicationState>(context, listen: false).setloggenIn(true);
-      }
+      if (authenticated) {}
+      await populateUsername();
     } on PlatformException catch (e) {
       print('Error: $e');
     }
@@ -61,7 +92,7 @@ class LoginPage extends StatelessWidget {
 
   Future<void> login(
       String username, String password, BuildContext context) async {
-    final url = Uri.parse("http://192.168.1.20:8080/api/auth/signin");
+    final url = Uri.parse("http://192.168.1.18:8080/api/auth/signin");
     final response = await http.post(
       url,
       headers: {"Content-Type": "application/json"},
@@ -69,6 +100,7 @@ class LoginPage extends StatelessWidget {
     );
     String responseBody = response.body;
     if (response.statusCode == 200) {
+      Provider.of<ApplicationState>(context, listen: false).setloggenIn(true);
       showDialog(
         context: context,
         barrierDismissible: true,
@@ -79,11 +111,11 @@ class LoginPage extends StatelessWidget {
           );
         },
       );
-
       Map<String, dynamic> responseMap = json.decode(responseBody);
-
       AuthenticatedUser authenticatedUser =
           AuthenticatedUser.fromJson(responseMap);
+      Provider.of<ApplicationState>(context, listen: false)
+          .setAuthenticatedUser(authenticatedUser);
 
       try {
         Get.to(DashboardPage(), arguments: authenticatedUser);
@@ -105,134 +137,144 @@ class LoginPage extends StatelessWidget {
     }
   }
 
-  TextEditingController usernameController = TextEditingController();
-  TextEditingController pwdController = TextEditingController();
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Login'),
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Form(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                TextFormField(
-                  controller: usernameController,
-                  decoration: const InputDecoration(
-                    labelText: 'Username',
-                    prefixIcon: Icon(Icons.mail_outline),
+    final appState = Provider.of<ApplicationState>(context);
+
+    if (appState.loggedIn) {
+      return DashboardPage();
+    } else {
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text('Login'),
+        ),
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Form(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  SizedBox(
+                    width: 200,
+                    height: 200,
+                    child: Image.asset('assets/Login-amico.png'),
                   ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Username cannot be empty';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: pwdController,
-                  obscureText: true,
-                  decoration: const InputDecoration(
-                    labelText: 'Password',
-                    prefixIcon: Icon(Icons.lock),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Password cannot be empty';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 32),
-                ElevatedButton(
-                  onPressed: () {
-                    String username = usernameController.text;
-                    String password = pwdController.text;
-                    login(username, password, context);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color.fromRGBO(58, 71, 80, 1),
-                  ),
-                  child: const Text(
-                    'Login',
-                    style: TextStyle(
-                      color: Color(0xFFD3D6DB),
+                  const SizedBox(height: 32),
+                  TextFormField(
+                    controller: usernameController,
+                    decoration: const InputDecoration(
+                      labelText: 'Username',
+                      prefixIcon: Icon(Icons.person),
                     ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Username cannot be empty';
+                      }
+                      return null;
+                    },
                   ),
-                ),
-                const SizedBox(height: 16),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => RegisterPage()));
-                  },
-                  child: const Text(
-                    "Don't have an account ? click here to create one",
-                    style: TextStyle(
-                      color: Colors.blue,
-                      decoration: TextDecoration.underline,
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: pwdController,
+                    obscureText: true,
+                    decoration: const InputDecoration(
+                      labelText: 'Password',
+                      prefixIcon: Icon(Icons.lock),
                     ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Password cannot be empty';
+                      }
+                      return null;
+                    },
                   ),
-                ),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const ForgotPasswordPage()));
-                  },
-                  child: const Text(
-                    "Forgot password ?",
-                    style: TextStyle(
-                      color: Colors.blue,
-                      decoration: TextDecoration.underline,
+                  const SizedBox(height: 32),
+                  ElevatedButton(
+                    onPressed: () {
+                      String username = usernameController.text;
+                      String password = pwdController.text;
+                      login(username, password, context);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color.fromRGBO(58, 71, 80, 1),
                     ),
-                  ),
-                ),
-                SizedBox(height: 150),
-                ElevatedButton(
-                  onPressed: () => _authenticateWithFingerprint(context),
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 50, vertical: 16),
-                    backgroundColor: const Color.fromRGBO(58, 71, 80, 1),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.fingerprint,
+                    child: const Text(
+                      'Login',
+                      style: TextStyle(
                         color: Color(0xFFD3D6DB),
                       ),
-                      SizedBox(width: 10),
-                      Text(
-                        'Authenticate with Fingerprint',
-                        style: TextStyle(
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => RegisterPage()));
+                    },
+                    child: const Text(
+                      "Don't have an account ? Create one",
+                      style: TextStyle(
+                        color: Colors.blue,
+                        decoration: TextDecoration.underline,
+                      ),
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  const ForgotPasswordPage()));
+                    },
+                    child: const Text(
+                      "Forgot password ?",
+                      style: TextStyle(
+                        color: Colors.blue,
+                        decoration: TextDecoration.underline,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 150),
+                  ElevatedButton(
+                    onPressed: () => _authenticateWithFingerprint(context),
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 50, vertical: 16),
+                      backgroundColor: const Color.fromRGBO(58, 71, 80, 1),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.fingerprint,
                           color: Color(0xFFD3D6DB),
                         ),
-                      ),
-                    ],
+                        SizedBox(width: 10),
+                        Text(
+                          'Biometric Access',
+                          style: TextStyle(
+                            color: Color(0xFFD3D6DB),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
-      ),
-    );
+      );
+    }
   }
 
   User parseUserDataFromResponse(String responseBody) {
     print("JSON Response: $responseBody");
-    // Parse the JSON response and extract user data
+
     final Map<String, dynamic> responseData =
         json.decode(responseBody) as Map<String, dynamic>;
 
@@ -249,7 +291,6 @@ class LoginPage extends StatelessWidget {
     final gender = responseData['gender'];
     final status = responseData['status'];
 
-    // Create a User instance
     User authenticatedUser = User(
       firstName,
       lastName,
@@ -259,9 +300,9 @@ class LoginPage extends StatelessWidget {
       cinNumber,
       address,
       job,
-      dateOfBirth ?? '', // Handle missing keys gracefully
-      gender ?? '', // Handle missing keys gracefully
-      status ?? '', // Handle missing keys gracefully
+      dateOfBirth ?? '',
+      gender ?? '',
+      status ?? '',
     );
 
     return authenticatedUser;

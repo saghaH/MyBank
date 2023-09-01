@@ -24,10 +24,17 @@ public class UserDetailsImpl implements UserDetails {
   @JsonIgnore
   private String password;
 
+
   private Collection<? extends GrantedAuthority> authorities;
+  private User user;
+
+
+  public UserDetailsImpl(User user) {
+    this.user = user;
+  }
 
   public UserDetailsImpl(Long id, String username, String email, String password,
-      Collection<? extends GrantedAuthority> authorities) {
+                         Collection<? extends GrantedAuthority> authorities) {
     this.id = id;
     this.username = username;
     this.email = email;
@@ -98,5 +105,10 @@ public class UserDetailsImpl implements UserDetails {
       return false;
     UserDetailsImpl user = (UserDetailsImpl) o;
     return Objects.equals(id, user.id);
+  }
+
+
+  public User getUser() {
+    return user;
   }
 }

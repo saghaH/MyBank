@@ -1,4 +1,7 @@
 import 'dart:convert';
+import 'package:MyBankMobile/home_page.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -18,7 +21,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   final _formKey = GlobalKey<FormState>();
 
   Future<void> resetPassword(String email, BuildContext context) async {
-    final url = Uri.parse("http://192.168.1.20:8080/api/auth/forgotpassword");
+    final url = Uri.parse("http://192.168.1.18:8080/api/auth/forgotpassword");
     final response = await http.post(
       url,
       headers: {"Content-Type": "application/json"},
@@ -26,20 +29,13 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
     );
     String responseString = response.body;
     if (response.statusCode == 200) {
-      showDialog(
-        context: context,
-        barrierDismissible: true,
-        builder: (BuildContext dialogContext) {
-          return AlertDialog(
-            title: Text('Backend Response'),
-            content: Text(response.body),
-          );
-        },
-      );
+      Get.snackbar(
+          'Success', 'A password reset email has been sent to your email');
+      Get.to(HomePage());
       try {
-        await OpenMailApp.openMailApp();
+        Get.to(HomePage());
       } catch (e) {
-        print('Error launching email app: $e');
+        print('Error navigating the pages: $e');
       }
     } else {
       showDialog(
@@ -63,13 +59,19 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
       appBar: AppBar(
         title: const Text('Forgot Password'),
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
+              SizedBox(
+                width: 300,
+                height: 300,
+                child: Image.asset('assets/Forgot password-pana.png'),
+              ),
+              const SizedBox(height: 32),
               TextFormField(
                 controller: emailController,
                 decoration: const InputDecoration(
@@ -86,9 +88,19 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
               ),
               SizedBox(height: 16),
               ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   String email = emailController.text;
-                  resetPassword(email, context);
+                  showDialog(
+                    context: context,
+                    barrierDismissible: false,
+                    builder: (BuildContext dialogContext) {
+                      return Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    },
+                  );
+                  await resetPassword(email, context);
+                  Navigator.pop(context);
                 },
                 child: Text('Reset Password'),
               ),

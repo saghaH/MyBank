@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 class AuthenticatedUser {
   final String accessToken;
   final String type;
@@ -54,5 +56,23 @@ class AuthenticatedUser {
       //jobField: json['user']['jobField'],
       job: json['user']['job'],
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'accessToken': accessToken,
+      'type': type,
+      'id': id,
+      'username': username,
+      'email': email,
+      'roles': roles,
+      'firstName': firstName,
+      'lastName': lastName,
+      'mobileNumber': mobileNumber,
+      'dateOfBirth': dateOfBirth,
+      'cinNumber': cinNumber,
+      'address': address,
+      'job': job,
+    };
   }
 }

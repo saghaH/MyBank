@@ -70,6 +70,9 @@ private String cinNumber;
   @Size(max = 50)
   private String job;
 
+  @NotNull
+  private boolean biometric=false;
+
 
 
 
@@ -84,6 +87,13 @@ private String cinNumber;
     this.username = username;
     this.email = email;
     this.password = password;
+  }
+
+  public void setBiometric(boolean biometric) {
+    this.biometric = biometric;
+  }
+
+  public User(Long userId) {
   }
 
   public String getCinNumber() {
