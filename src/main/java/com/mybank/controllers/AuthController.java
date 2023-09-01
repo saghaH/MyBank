@@ -43,7 +43,7 @@ import javax.crypto.spec.SecretKeySpec;
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
-  String secretKey = "00112233445566778899AABBCCDDEEFF";
+  String secretKey = "secretkey";
   @Autowired
   AuthenticationManager authenticationManager;
 
