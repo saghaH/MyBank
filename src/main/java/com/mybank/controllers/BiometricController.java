@@ -30,7 +30,7 @@ import java.security.NoSuchAlgorithmException;
 public class BiometricController {
 
 
-    String secretKey = "00112233445566778899AABBCCDDEEFF";
+    String secretKey = "secretkey";
 
     @Autowired
     private BiometricRepository biometricRepository;
