@@ -111,7 +111,7 @@ public class WebSecurityConfig {
     mailSender.setHost("smtp.gmail.com");
     mailSender.setPort(587);
     mailSender.setUsername("mybankspringflutter@gmail.com");
-    mailSender.setPassword("emuqffmlxwxhtpmt");
+    mailSender.setPassword("appPwd");
 
     Properties props = mailSender.getJavaMailProperties();
     props.put("mail.smtp.auth", "true");
